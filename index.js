@@ -21,10 +21,17 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', async message => {
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
+	if (!(message.content.startsWith(prefix) || message.content.includes('pingfor')) || message.author.bot) return;
 
-	var args = message.content.slice(prefix.length).trim().split(' ');
-	var commandName = args.shift().toLowerCase();
+    var args = message.content.slice(prefix.length).trim().split(' ');
+    var commandName = args.shift().toLowerCase();
+
+    // Pingfor commands are special and can be used without the prefix, and are interpreted from any point in the message.
+    if (message.content.includes('pingfor')) {
+        var msg = message.content.trim().split('pingfor');
+        args = msg[1].trim().split(' ');
+        commandName = 'pingfor';
+    }
 
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 

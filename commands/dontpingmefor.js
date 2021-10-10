@@ -5,7 +5,7 @@ module.exports = {
 	name: 'dontpingmefor',
 	description: 'Removes the user from the ping list for a given raid.',
     aliases: ['unsubscribe', 'unsub'],
-	usage: '[command name] [raid name or alias]',
+	usage: '[command name] [raid name or alias, or "all" to remove yourself from all ping lists]',
     async execute(message, args) {
         const userId = message.member.id;
         var toPingFor = args.shift();
@@ -37,7 +37,7 @@ module.exports = {
             var userList = raid.get('users');
             if (userList.includes(userId)) {
                 var list = userList.split(userId + ',');
-                var ul = list.join();
+                var ul = list.filter(Boolean).join(); // Filter removes potential empty strings from the join to prevent stray commas from appearing.
                 await Raids.update({ users: ul }, { where: { name: toPingFor } });
                 return message.channel.send(`Success. You have been removed from the ping list for ${toPingFor}.`);
             }

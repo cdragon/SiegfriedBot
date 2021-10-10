@@ -27,11 +27,12 @@ module.exports = {
         }
         if (raid) {
             var userList = raid.get('users');
-            userList = userList.slice(0, -1); // remove trailing comma
-            var ids = userList.split(',');
-            if (!ids.length) {
+            if (!userList) {
                 return message.channel.send(`Sorry, there's no one currently on the ping list for ${toPingFor}. (If you need HELP, try pinging for "help"!)`);
             }
+            //console.log(`userlist is: ${userList}`);
+            userList = userList.slice(0, -1); // remove trailing comma
+            var ids = userList.split(',');
             var mentionString = "<@" + ids.shift() + ">";
             for (var i in ids) {
                 mentionString += " | <@";

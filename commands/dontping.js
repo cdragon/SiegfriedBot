@@ -4,7 +4,7 @@ const { Raids, Aliases } = require ('../dbObjects');
 module.exports = {
 	name: 'dontping',
 	description: 'Provide a user ID to no longer ping for any raids. WARNING: this command can only be executed by an admin!',
-    aliases: ['forceunsub', 'removeuser'],
+    aliases: ['forceunsub', 'removeuser', 'dontpinguser'],
 	usage: '[command name] [user ID to unsub]',
 	async execute(message, args) {
         if (!message.member.permissions.has("ADMINISTRATOR")) {

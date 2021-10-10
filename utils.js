@@ -23,7 +23,7 @@ module.exports = {
         strList.shift(); // shift first element
         for (var i in strList) { // If there are more words, also capitalize them.
             returnString += ' ';
-            if (strlist[i] === 'hl') { // Special case for "HL" raid names.
+            if (strList[i] === 'hl') { // Special case for "HL" raid names.
                 returnString += "HL";
             } else {
                 returnString += strList[i].charAt(0).toUpperCase();
