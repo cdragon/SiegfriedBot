@@ -69,7 +69,11 @@ module.exports = {
         // If we're doing the whole list, DM it to the user...
         for (var s in returnStringArray) {
             //message.channel.send(returnStringArray[s]);
-            message.author.send(returnStringArray[s]);
+            try {
+                message.author.send(returnStringArray[s]);
+            } catch (error) {
+                return message.reply('It seems like I can\'t DM you.');
+            }
         }
         return message.author.send(returnString)
 				.then(() => {
