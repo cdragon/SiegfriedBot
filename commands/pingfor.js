@@ -7,8 +7,16 @@ module.exports = {
     aliases: ['pingraid'],
 	usage: '[command name] [raid name or alias] [raid code: optional]',
     async execute(message, args) {
-        var toPingFor = args.shift().toLowerCase();
-        var secondArg = args.shift().toLowerCase();
+        var toPingFor = args.shift()
+        if (toPingFor) {
+            toPingFor = toPingFor.toLowerCase();
+        } else {
+            return message.channel.send(`Sorry, I need to know what raid to ping for!`); 
+        }
+        var secondArg = args.shift();
+        if (secondArg) {
+            secondArg = secondArg.toLowerCase();
+        }
         var code = secondArg;
 
         /*var p = utils.parseArgs(args);
