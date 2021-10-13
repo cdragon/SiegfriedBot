@@ -8,7 +8,8 @@ module.exports = {
 	usage: '[command name] [raid name or alias]',
 	async execute(message, args) {
         const userId = message.member.id;
-        var toPingFor = args.shift();
+        var parsedArgs = utils.parseArgs(args);
+        var toPingFor = parsedArgs[0].join(" ");
 
         // Check if this is an alias for a raid.
         var alias = await Aliases.findOne({ where: { alias: toPingFor } });

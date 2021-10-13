@@ -7,9 +7,19 @@ module.exports = {
     aliases: ['pingraid'],
 	usage: '[command name] [raid name or alias] [raid code: optional]',
     async execute(message, args) {
-        var toPingFor = args.shift();
-        var secondArg = args.shift();
+        var toPingFor = args.shift().toLowerCase();
+        var secondArg = args.shift().toLowerCase();
         var code = secondArg;
+
+        /*var p = utils.parseArgs(args);
+        var code = p[0].pop();
+        var toPingFor = p[0].join(" ");
+        var re = /[0-9A-Fa-f]{6}/g; // Test if this is valid hexadecimal (a raid code)
+        if (!re.test(code)) {
+            toPingFor += " ";
+            toPingFor += code;
+            code = "";
+        }*/
 
         // Find the proper name for this raid if we were given an alias.
         var alias = await Aliases.findOne({ where: { alias: toPingFor } });

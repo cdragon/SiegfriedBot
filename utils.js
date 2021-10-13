@@ -7,10 +7,10 @@ module.exports = {
         while (typeof (i = args.shift()) !== 'undefined') {
             /* Option flag */
             if (i.charAt(0) === '-') {
-                index = i.charAt(1);
+                index = i.charAt(1).toLowerCase();
                 dict[index] = [];
             } else {
-                dict[index].push(i);
+                dict[index].push(i.toLowerCase());
             }
         }
         return dict;
@@ -31,5 +31,33 @@ module.exports = {
             }
         }
         return returnString;
+    },
+
+    parseQuotedArgs: function(array) {
+        var returnArray = [];
+        var str = "";
+        for (var i in array) {
+            if (!str) {
+                if (array[i].charAt(0) === '\"') {
+                    if (str.charAt(str.length - 1) === '\"') {
+                        returnArray.push(array[i]);
+                    } else {
+                        str += array[i].slice(1);
+                        str += " ";
+                    }
+                } else {
+                    returnArray.push(array[i]);
+                }
+            } else {
+                str += array[i];
+                if (str.charAt(str.length - 1) === '\"') {
+                    returnArray.push(str.slice(0, -1));
+                    str = "";
+                } else {
+                    str += " ";
+                }
+            }
+        }
+        return returnArray;
     },
 };

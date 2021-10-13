@@ -20,7 +20,7 @@ module.exports = {
                     break;
                 case 'a': // aliases
                     // Load the arguments parsed as our raid aliases.
-                    raidAliases = argsDict[key];
+                    raidAliases = utils.parseQuotedArgs(argsDict[key]);
                     break;
                 case 'c': // category
                     raidCategory = argsDict[key].join(" ");

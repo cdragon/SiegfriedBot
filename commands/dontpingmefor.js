@@ -8,7 +8,8 @@ module.exports = {
 	usage: '[command name] [raid name or alias, or "all" to remove yourself from all ping lists]',
     async execute(message, args) {
         const userId = message.member.id;
-        var toPingFor = args.shift();
+        var parsedArgs = utils.parseArgs(args);
+        var toPingFor = parsedArgs[0].join(" ");
 
         // Check for special command "all".
         if (toPingFor === "all") {
