@@ -17,7 +17,6 @@ const Aliases = sequelize.define('raids', {
         type: Sequelize.STRING,
         unique: true,
     },
-	guild: Sequelize.INTEGER,
 });
 
 /* Model for database of raid ping lists, tracked by raid full name, with categories if applicable.
@@ -30,7 +29,6 @@ const Raids = sequelize.define('raidpings', {
     category: Sequelize.STRING,
     element: Sequelize.STRING,
 	users: Sequelize.TEXT,
-	guild: Sequelize.INTEGER,
 });
 
 module.exports = { Raids, Aliases };

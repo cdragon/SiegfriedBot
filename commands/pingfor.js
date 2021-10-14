@@ -27,7 +27,7 @@ module.exports = {
         if (!raid) { // if we didn't find the raid, check if maybe we got a multi-part raid name before we give up.
             while (typeof (i = args.shift()) !== 'undefined') { // Check for as many args as we have, until we find a raid.
                 // not a raid code; try appending
-                toPingFor += " ";
+                toPingFor += ' ';
                 toPingFor += i.toLowerCase();
                 raid = await Raids.findOne({ where: { name: toPingFor } });
                 if (raid) { // if we found the raid, go on and break out of the loop
@@ -44,13 +44,34 @@ module.exports = {
                 return message.channel.send(`Sorry, there's no one currently on the ping list for ${toPingFor}. (If you need HELP, try pinging for "help"!)`);
             }
             userList = userList.slice(0, -1); // remove trailing comma
+
             var ids = userList.split(',');
-            var mentionString = "<@" + ids.shift() + ">";
-            for (var i in ids) {
-                mentionString += " | <@";
-                mentionString += ids[i];
-                mentionString += ">";
+            var id = ids.shift();
+            var mentionString = mentionString = '<@' + id + '>';
+            var fixIds = false;
+            var fixIdString = '';
+            if (!id) {
+                fixIds = true;
+                mentionString = "";
             }
+
+            // Do some automatic clean-up if we run into stray commas...
+            for (var i in ids) {
+                if (ids[i]) {
+                    mentionString += ' | <@' + ids[i] + '>';
+                    fixIdString += ids[i] + ',';
+                } else {
+                    fixIds = true;
+                }
+            }
+            if (fixIds) { // flag is set if we hit a blank in the user list, so that we can fix that on the fly
+                try {
+                    await Raids.update({ users: fixIdString }, { where: { name: toPingFor } });
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
             toPingFor = utils.capitalizeFirstLetter(toPingFor); // prettify raid name
             message.channel.send(`Pinging for ${toPingFor}: ${mentionString}`);
             if (code) {

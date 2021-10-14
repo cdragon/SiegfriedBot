@@ -1,16 +1,15 @@
 module.exports = {
-    /* Parses arbitrary arguments with option flags into arrays of strings, indexed by the option flag letter. */
+    /* Parses arbitrary string of arguments with option flags into arrays of strings, indexed by the option flag letter. */
     parseArgs: function(args) {
         var dict = {};
         var index = 0;
         dict[index] = [];
-        while (typeof (i = args.shift()) !== 'undefined') {
-            /* Option flag */
-            if (i.charAt(0) === '-') {
-                index = i.charAt(1).toLowerCase();
+        for (var a in args) {
+            if (args[a].charAt(0) === '-') { // option flag
+                index = args[a].charAt(1).toLowerCase();
                 dict[index] = [];
-            } else {
-                dict[index].push(i.toLowerCase());
+            } else { // space delimited
+                dict[index].push(args[a].toLowerCase());
             }
         }
         return dict;
@@ -33,6 +32,7 @@ module.exports = {
         return returnString;
     },
 
+    /* Parse quotation marks ("") out of argument strings */
     parseQuotedArgs: function(array) {
         var returnArray = [];
         var str = "";
