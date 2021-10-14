@@ -33,9 +33,21 @@ module.exports = {
             }
             // Get raid information
             const raid = await Raids.findOne({ where: { name: raidName } });
-            // Put only this value into the "raids" array
-            raids.push(raid);
-        } else { // Otherwise, find all raids in the table.
+            if (raid) {
+                // Put only this value into the "raids" array
+                raids.push(raid);
+            } else { // We got an argument, but it isn't a raid name or alias.
+                raids = await Raids.findAll({ where: { category: raidName } } );
+                if (raids.length <= 0) { // No dice. Maybe it's an element?
+                    raids = await Raids.findAll({ where: { element: raidName } } );
+                }
+            }
+            // If we couldn't find anything, provide a confused response.
+            if (raids.length <= 0) {
+                return message.channel.send(`Sorry, I couldn't find any raids matching that argument.`);
+            }
+        } else { 
+            // Retrieve all raids if given no arguments.
             raids = await Raids.findAll();
         }
 
@@ -54,19 +66,18 @@ module.exports = {
 
             if (returnString.length >= 1500) {
                 returnStringArray.push(returnString)
-                returnString = "";
+                returnString = '';
             } else {
                 returnString += '\n';
             }
         }
-        //returnStringArray.push(returnString);
 
-        // If we're just sending one raid's info, send it to the channel.
+        // If we're just sending one raid/category's info, send it to the channel.
         if (raidName) {
             return message.channel.send(returnString);
         }
 
-        // If we're doing the whole list, DM it to the user...
+        // If we're doing the whole list, DM it to the user... it's very long.
         for (var s in returnStringArray) {
             //message.channel.send(returnStringArray[s]);
             try {
@@ -75,6 +86,7 @@ module.exports = {
                 return message.reply('It seems like I can\'t DM you.');
             }
         }
+
         return message.author.send(returnString)
 				.then(() => {
 					if (message.channel.type === 'dm') return;

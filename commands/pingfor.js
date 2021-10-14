@@ -35,6 +35,8 @@ module.exports = {
                     break;
                 }
             }
+        } else {
+            code = args.shift();
         }
 
         // Assuming we found the raid, send out the ping.
@@ -74,12 +76,24 @@ module.exports = {
 
             toPingFor = utils.capitalizeFirstLetter(toPingFor); // prettify raid name
             message.channel.send(`Pinging for ${toPingFor}: ${mentionString}`);
+
+            // If we got a raid code, let's send that in a separate message.
             if (code) {
                 var re = /[0-9A-Fa-f]{6}/g; // Test if this is valid hexadecimal (a raid code)
                 if (re.test(code)) {
                     message.channel.send(`${code}`); // If it's a raid code, send it in a separate message after for mobile users.
                 }
+            } else {
+                // Just in case, check if the code is at the end of the message for some reason.
+                code = args[args.length-1];
+                if (code) {
+                    var re = /[0-9A-Fa-f]{6}/g; // Test if this is valid hexadecimal (a raid code)
+                    if (re.test(code)) {
+                        message.channel.send(`${code}`); // If it's a raid code, send it in a separate message after for mobile users.
+                    }
+                }
             }
+
             return;
         }
         return message.channel.send(`I'm sorry, I don't know what raid that is yet. (Maybe you need to add this alias to my database?)`);
