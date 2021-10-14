@@ -17,7 +17,7 @@ function constructReturnString(name, aliases, category, element) {
 module.exports = {
 	name: 'viewraids',
 	description: 'Gets all raids (or a specified raid) & their aliases for user reference.',
-    aliases: ['listaliases', 'viewraid', 'viewaliases', 'showaliases'],
+    aliases: ['listaliases', 'viewraid', 'viewaliases', 'showaliases', 'raidinfo'],
 	usage: '[command name] [raid name or alias: optional]',
     async execute(message, args) {
         var parsedArgs = utils.parseArgs(args);

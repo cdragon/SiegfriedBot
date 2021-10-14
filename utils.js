@@ -29,6 +29,11 @@ module.exports = {
                 returnString += strList[i].slice(1);
             }
         }
+        var i = returnString.indexOf('-');
+        if (i >= 0) {
+            // Do a little string wizardry to make names with dashes look good (this is literally just Anima-Animus Core right now)
+            returnString = returnString.slice(0, i+1) + returnString.charAt(i+1).toUpperCase() + returnString.slice(i+2);
+        }
         return returnString;
     },
 

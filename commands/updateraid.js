@@ -4,7 +4,7 @@ const { Raids, Aliases } = require ('../dbObjects');
 module.exports = {
 	name: 'updateraid',
 	description: 'Update a raid in the database.',
-    aliases: ['addraid', 'editraid'],
+    aliases: ['addraid', 'editraid', 'updateraids'],
 	usage: '[command name] [raid name] -a [aliases: optional, any number separated by spaces] -c [category: optional] -e [element: optional]',
 	async execute(message, args) {
         var raidName = "";
@@ -42,10 +42,18 @@ module.exports = {
             if (raid) {
                 //console.log('Raid already exists; updating category and element instead...');
                 if (raidElement) {
-                    await Raids.update({ element: raidElement }, { where: { name: raidName } });
+                    if (raidElement === 'remove') {
+                        await Raids.update({ element: null }, { where: { name: raidName } });
+                    } else {
+                        await Raids.update({ element: raidElement }, { where: { name: raidName } });
+                    }
                 }
                 if (raidCategory) {
-                    await Raids.update({ category: raidCategory }, { where: { name: raidName } });
+                    if (raidCategory === 'remove') {
+                        await Raids.update({ category: null }, { where: { name: raidName } });
+                    } else {
+                        await Raids.update({ category: raidCategory }, { where: { name: raidName } });
+                    }
                 }
             } else {
                 //console.log('Adding new raid to the database...');
