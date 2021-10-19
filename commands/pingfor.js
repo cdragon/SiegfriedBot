@@ -14,9 +14,8 @@ module.exports = {
         } else {
             return message.channel.send(`Sorry, I need to know what raid to ping for!`); 
         }*/
-        var toPingFor = "";
-        var code = "";
-        var re = /[0-9A-Fa-f]{6}/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
+        var toPingFor = '';
+        var code = ``;
         var alias, raid;
 
         if (args.length <= 0) { // 0 length args is an error
@@ -28,14 +27,15 @@ module.exports = {
             // Try checking to see if there's a raid code anywhere.
             var codeindex = args.length;
             for (let i in args) {
+                var re = /[0-9A-Fa-f]{6,8}/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
                 if (re.test(args[i])) {
                     codeindex = i;
                 }
             }
-            code = args[codeindex];
+            if (codeindex < args.length) code = args[codeindex];
             // If we found a raid code, check args from the command to the code; if we didn't, just check the whole thing.
             var argsTrimmed = args.slice(0, codeindex);
-            var testping = argsTrimmed.join(" ").toLowerCase();
+            var testping = argsTrimmed.join(' ').toLowerCase();
             alias = await Aliases.findOne({ where: { alias: testping } });
             raid = await Raids.findOne({ where: { name: testping } });
             if (alias) toPingFor = alias.get('name');
@@ -54,18 +54,13 @@ module.exports = {
         if (!raid) raid = await Raids.findOne({ where: { name: toPingFor } }); // No need to check again if we found it already.
         if (!raid) { // If we didn't find the raid, check if maybe we got a multi-part raid name (in a weird message) before we give up.
             while (typeof (i = args.shift()) !== 'undefined') { // Check for as many args as we have, until we find a raid.
-                if (re.test(i)) { 
-                    // this is a raid code, not part of the raid name...
-                    code = i;
-                } else {
-                    // not a raid code; try appending
-                    toPingFor += ' ';
-                    toPingFor += i.toLowerCase();
-                    raid = await Raids.findOne({ where: { name: toPingFor } });
-                    if (raid) { // if we found the raid, go on and break out of the loop
-                        if (!code) code = args.shift(); // Guess that maybe the next argument is the raid code instead.
-                        break;
-                    }
+                // not a raid code; try appending
+                toPingFor += ' ';
+                toPingFor += i.toLowerCase();
+                raid = await Raids.findOne({ where: { name: toPingFor } });
+                if (raid) { // if we found the raid, go on and break out of the loop
+                    if (!code) code = args.shift(); // Guess that maybe the next argument is the raid code instead.
+                    break;
                 }
             }
         } else {
@@ -112,12 +107,14 @@ module.exports = {
 
             // If we got a raid code, let's send that in a separate message.
             if (code) {
+                var re = /[0-9A-Fa-f]{6,8}/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
                 if (re.test(code)) {
                     message.channel.send(`${code.toUpperCase()}`); // If it's a raid code, send it in a separate message after for mobile users.
-                }
+                } 
             } else {
                 // Just in case, check if the code is at the end of the message for some reason.
                 code = args[args.length-1];
+                var re = /[0-9A-Fa-f]{6,8}/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
                 if (code) {
                     if (re.test(code)) {
                         message.channel.send(`${code.toUpperCase()}`); // If it's a raid code, send it in a separate message after for mobile users.

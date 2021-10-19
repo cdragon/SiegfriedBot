@@ -41,6 +41,7 @@ module.exports = {
         var returnString = sub ? `Success. You have been added to the lists for the following raids: ` 
                                 : `Success. You will not be pinged for the following raids: `;
         var alreadyAdded = ``;
+        var toAdd = ``;
         for (var a in parsedArgs) {
             var toPingFor = parsedArgs[a];
 
@@ -64,8 +65,13 @@ module.exports = {
                     newList = dounsub(userId, userList);
                 }
                 if (newList !== userList) {
-                    await Raids.update({ users: newList }, { where: { name: toPingFor } });
-                    returnString += `${prettyPing}, `;
+                    try {
+                        await Raids.update({ users: newList }, { where: { name: toPingFor } });
+                        toAdd += `${prettyPing}, `;
+                    } catch (error) {
+                        console.error(error);
+                        return message.channel.send(`I'm sorry, something went wrong when updating the database.`);
+                    }
                 } else {
                     alreadyAdded += `${prettyPing}, `;
                 }
@@ -95,7 +101,7 @@ module.exports = {
                                 alreadyAdded += `, `;
                             }
                         }
-                        returnString += `${prettyPing} raids (${raidString}), `;
+                        toAdd += `${prettyPing} raids (${raidString}), `;
                     } catch (error) {
                         console.error(error);
                         return message.channel.send(`I'm sorry, something went wrong when updating the database.`);
@@ -105,10 +111,16 @@ module.exports = {
                 }
             }
         }
-        returnString = returnString.slice(0, -2) + `.`; // Output cleanup (trailing comma+space)
-        if (alreadyAdded) { // If we found any the user was already on, let them know for posterity's sake.
+
+        // If we didn't add/remove anything, don't say that we did, because that's confusing and dumb.
+        if (toAdd.length) returnString = returnString + toAdd.slice(0, -2) + `.`; // Output cleanup (trailing comma+space)
+        else returnString = ``;
+
+        // If we found any lists that the user was already on, let them know for posterity's sake.
+        if (alreadyAdded) { 
             alreadyAdded = alreadyAdded.slice(0, -2) + `.`;
-            returnString += `\nYou were already on (or off) the lists for the following: `;
+            if (returnString) returnString += `\n`;
+            returnString += sub ? `You were already on the lists for the following: ` : `You were not on the lists for the following: `;
             returnString += alreadyAdded;
         }
 
