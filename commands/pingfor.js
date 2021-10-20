@@ -76,24 +76,21 @@ module.exports = {
             userList = userList.slice(0, -1); // remove trailing comma
 
             var ids = userList.split(',');
-            var id = ids.shift();
-            var mentionString = mentionString = '<@' + id + '>';
+            var mentionString = '';
             var fixIds = false;
             var fixIdString = '';
-            if (!id) {
-                fixIds = true;
-                mentionString = "";
-            }
 
-            // Do some automatic clean-up if we run into stray commas...
             for (var i in ids) {
-                if (ids[i]) {
-                    mentionString += ' | <@' + ids[i] + '>';
+                if (ids[i].length > 0) {
+                    mentionString += '<@' + ids[i] + '> | ';
                     fixIdString += ids[i] + ',';
-                } else {
+                } else { // blank user ID
+                    console.log(`pingfor found blank user in ${toPingFor} at index ${i}. Removing...`);
                     fixIds = true;
                 }
             }
+
+            // Do some automatic clean-up if we run into stray commas...
             if (fixIds) { // flag is set if we hit a blank in the user list, so that we can fix that on the fly
                 try {
                     await Raids.update({ users: fixIdString }, { where: { name: toPingFor } });
@@ -102,6 +99,7 @@ module.exports = {
                 }
             }
 
+            mentionString = mentionString.slice(0, -3); // remove trailing pipe ' | '
             toPingFor = utils.capitalizeFirstLetter(toPingFor); // prettify raid name
             message.channel.send(`Pinging for ${toPingFor}: ${mentionString}`);
 

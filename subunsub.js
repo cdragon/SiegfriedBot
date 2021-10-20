@@ -124,6 +124,7 @@ module.exports = {
             returnString += alreadyAdded;
         }
 
-        return message.channel.send(returnString);
+        if (returnString) return message.channel.send(returnString);
+        return;
     },
 }
