@@ -7,7 +7,10 @@ TODO:
 - Let people praise Siegfried for his hard work
 - Allow aliases for raid categories and elements
 - Sort raid lists within the bot's database?
-- Extended special caps formating on return strings (so that pings with parenthesis in them look nicer)
+- Log errors to a file
+
+Bugs under watch:
+- First user in a list being removed from ping list after a different user unsubscribed (seems to be fixed, but under watch nonetheless)
 
 Additional features in consideration:
 - Event calendar
