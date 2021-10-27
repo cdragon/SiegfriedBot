@@ -22,17 +22,18 @@ module.exports = {
             return message.channel.send(`Sorry, I need to know what raid to ping for!`); 
         }
 
-        // No point doing all this if we only got one arg.
+        // If we got multiple args, do some guesswork to try to read it correctly.
         if (args.length > 1) {
             // Try checking to see if there's a raid code anywhere.
             var codeindex = args.length;
             for (let i in args) {
-                var re = /[0-9A-Fa-f]{6,8}/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
+                var re = /^[0-9A-Fa-f]{6,8}$/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
                 if (re.test(args[i])) {
                     codeindex = i;
                 }
             }
             if (codeindex < args.length) code = args[codeindex];
+
             // If we found a raid code, check args from the command to the code; if we didn't, just check the whole thing.
             var argsTrimmed = args.slice(0, codeindex);
             var testping = argsTrimmed.join(' ').toLowerCase();
@@ -52,9 +53,9 @@ module.exports = {
 
         // Make sure we have a raid to ping for.
         if (!raid) raid = await Raids.findOne({ where: { name: toPingFor } }); // No need to check again if we found it already.
+
         if (!raid) { // If we didn't find the raid, check if maybe we got a multi-part raid name (in a weird message) before we give up.
             while (typeof (i = args.shift()) !== 'undefined') { // Check for as many args as we have, until we find a raid.
-                // not a raid code; try appending
                 toPingFor += ' ';
                 toPingFor += i.toLowerCase();
                 raid = await Raids.findOne({ where: { name: toPingFor } });
@@ -105,15 +106,15 @@ module.exports = {
 
             // If we got a raid code, let's send that in a separate message.
             if (code) {
-                var re = /[0-9A-Fa-f]{6,8}/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
+                var re = /^[0-9A-Fa-f]{6,8}$/g; // Test for if a value is valid 6 to 8 digit hexadecimal (a raid code)
                 if (re.test(code)) {
                     message.channel.send(`${code.toUpperCase()}`); // If it's a raid code, send it in a separate message after for mobile users.
                 } 
             } else {
                 // Just in case, check if the code is at the end of the message for some reason.
                 code = args[args.length-1];
-                var re = /[0-9A-Fa-f]{6,8}/g; // Test for if a value is valid 6-digit hexadecimal (a raid code)
                 if (code) {
+                    var re = /^[0-9A-Fa-f]{6,8}$/g; // Test for if a value is valid 6 to 8 digit hexadecimal (a raid code)
                     if (re.test(code)) {
                         message.channel.send(`${code.toUpperCase()}`); // If it's a raid code, send it in a separate message after for mobile users.
                     }

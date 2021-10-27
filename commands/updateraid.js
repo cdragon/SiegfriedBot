@@ -12,6 +12,11 @@ module.exports = {
         var raidAliases = [];
         var raidElement = "";
 
+        // Return string info
+        var returnUpdated = "updated";
+        var returnAliases = ``;
+
+        // Parse arguments given.
         var argsDict = utils.parseArgs(args);
         for (var key in argsDict) {
             switch (key) {
@@ -28,13 +33,15 @@ module.exports = {
                 case 'e': // element
                     raidElement = argsDict[key].join(" ");
                     break;
-                default:
-                    return message.channel.send(`Sorry, I didn't understand that argument.`);
+                default: // invalid argument
+                    return message.channel.send(`Sorry, I didn't understand that argument.\n`+
+                        `Usage is: [raid name] -a [aliases: optional, space-separated unless wrapped in \"double quotes\"] -c [category: optional] -e [element: optional]`);
             }
         }
 
         if (!raidName) {
-            return message.channel.send('Sorry, I need to know what raid you want me to add or edit.');
+            return message.channel.send('Sorry, I need to know what raid you want me to add or edit.\n'+
+                        'Usage is: [raid name] -a [aliases: optional, space-separated unless wrapped in \"double quotes\"] -c [category: optional] -e [element: optional]');
         }
 
         try {
@@ -57,6 +64,7 @@ module.exports = {
                 }
             } else {
                 //console.log('Adding new raid to the database...');
+                returnUpdated = "added to the database";
                 await Raids.create({
                     name: raidName, // primary key
                     category: raidCategory,
@@ -64,18 +72,24 @@ module.exports = {
                     users: "", // Start with a blank list of users.
                 });
             }
+
             const aliasCount = raidAliases.length;
             while (typeof (i = raidAliases.shift()) !== 'undefined') { // Add one entry to "Alias" DB for each alias given
                 await Aliases.create({
                     name: raidName, // foreign key into raids db
                     alias: i,
                 });
+                returnAliases += i + `, `;
             }
-            return message.channel.send(`Raid ${raidName} has been registered or updated with ${aliasCount} aliases.`);
+
+            if (!aliasCount) returnAliases = `none`;
+            else returnAliases = returnAliases.slice(0, -2);
+
+            return message.channel.send(`Raid "${raidName}" has been ${returnUpdated} with ${aliasCount} aliases: ${returnAliases}.`);
         }
         catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
-                return message.channel.send('That alias already exists in the database.');
+                return message.channel.send('Error: that alias already exists in the database. All aliases must be unique.');
             }
             return message.channel.send('Sorry, something went wrong while updating the database.');
         }

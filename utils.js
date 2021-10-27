@@ -19,6 +19,7 @@ module.exports = {
     capitalizeFirstLetter: function(string) {
         var strList = string.split(' ');
         var returnString = strList[0].charAt(0).toUpperCase() + strList[0].slice(1);
+
         strList.shift(); // shift first element
         for (var i in strList) { // If there are more words, also capitalize them.
             returnString += ' ';
@@ -29,11 +30,27 @@ module.exports = {
                 returnString += strList[i].slice(1);
             }
         }
+
         var i = returnString.indexOf('-');
         if (i >= 0) {
             // Do a little string wizardry to make names with dashes look good (this is literally just Anima-Animus Core right now)
             returnString = returnString.slice(0, i+1) + returnString.charAt(i+1).toUpperCase() + returnString.slice(i+2);
         }
+
+        i = returnString.indexOf('(');
+        if (i >= 0) {
+            var j = returnString.indexOf(')');
+            if (j > 0) {
+                if (j-i <= 3) {
+                    // capitalize everything inside parentheses, assuming this to be an abbreviation
+                    returnString = returnString.slice(0, i+1) + returnString.slice(i+1, j).toUpperCase() + returnString.slice(j);
+                } else {
+                    // capitalize first letter of parenthetical word
+                    returnString = returnString.slice(0, i+1) + returnString.charAt(i+1).toUpperCase() + returnString.slice(i+2);
+                }
+            }
+        }
+
         return returnString;
     },
 
@@ -44,8 +61,8 @@ module.exports = {
         for (var i in array) {
             if (!str) {
                 if (array[i].charAt(0) === '\"') {
-                    if (str.charAt(str.length - 1) === '\"') {
-                        returnArray.push(array[i]);
+                    if (array[i].charAt(array[i].length - 1) === '\"') {
+                        returnArray.push(array[i].slice(1, -1));
                     } else {
                         str += array[i].slice(1);
                         str += " ";
