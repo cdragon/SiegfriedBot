@@ -10,6 +10,7 @@ module.exports = {
     async execute(message, args) {
         var argsDict = utils.parseArgs(args);
         var parsedArgs = utils.parseQuotedArgs(argsDict[0]);
+        const userId = message.member.id;
 
         // 'all' is a special argument for unsub; check for it before routing to the main function body.
         if (parsedArgs[0] === 'all') {
