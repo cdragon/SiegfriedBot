@@ -14,36 +14,15 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-client.once('ready', () => {
-    Raids.sync();
-    Aliases.sync();
-    console.log('Ready!');
-});
-
-client.on('messageCreate', async message => {
-    const lowercaseMessage = message.content.toLowerCase();
-	if (!(lowercaseMessage.startsWith(prefix) || lowercaseMessage.includes('pingfor')) || message.author.bot) return;
-
-    var args = message.content.slice(prefix.length).trim().split(' ');
-    var commandName = args.shift().toLowerCase();
-
-    // Pingfor commands are special and can be used without the prefix, and are interpreted from any point in the message.
-    if (lowercaseMessage.includes('pingfor')) {
-        var msg = lowercaseMessage.trim().split('pingfor');
-        args = msg[1].trim().split(' ');
-        commandName = 'pingfor';
-    }
-
-    const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
-    if (!command) return;
-
-    try {
-		command.execute(message, args);
-	} catch (error) {
-		console.error(error);
-		return message.reply('There was an error trying to execute that command!');
+/* Set up event handlers. */
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+for (const file of eventFiles) {
+	const event = require(`./events/${file}`);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
 	}
-});
+}
 
 client.login(token);

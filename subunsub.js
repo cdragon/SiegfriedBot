@@ -26,11 +26,10 @@ function dounsub (userId, userList) {
 module.exports = {
     unsub: async function (raidName, userId, userList) {
         var newList = dounsub(userId, userList);
-        if (newList.length) {
-            await Raids.update({ users: newList }, { where: { name: toPingFor } });
+        await Raids.update({ users: newList }, { where: { name: raidName } });
+        if (newList.length) { // why did I do this
             return true;
         }
-        await Raids.update({ users: newList }, { where: { name: raidName } });
         return false;
     },
     subunsub: async function(message, args, sub) {
